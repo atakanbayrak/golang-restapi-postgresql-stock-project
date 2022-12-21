@@ -107,24 +107,31 @@ func listProducts(context *gin.Context) {
 		panic(err.Error())
 	}
 	defer rows.Close()
-	// Neden bu kadar ekrana yazıyor
+
+	var productsNew Product
+	var productsShow = []Product{}
+
+	var title1 int
+	var title2 string
+	var title3 int
+	var title4 int
+
 	for rows.Next() {
-		var title1 int
-		var title2 string
-		var title3 int
-		var title4 int
+
 		if err := rows.Scan(&title1, &title2, &title3, &title4); err != nil {
 			log.Fatal(err)
 		}
-		var productsNew Product
+		fmt.Println(title1)
 		productsNew.Id = title1
 		productsNew.Name = title2
 		productsNew.Stock = title3
 		productsNew.Type = title4
-		products = append(products, productsNew)
+		productsShow = append(productsShow, productsNew)
 	}
-	context.IndentedJSON(http.StatusOK, products)
+
 	rows.Close()
+	context.IndentedJSON(http.StatusOK, productsShow)
+
 }
 func listProductsById(context *gin.Context) {
 	var productById Product
@@ -138,9 +145,10 @@ func listProductsById(context *gin.Context) {
 
 }
 func main() {
+
 	router := gin.Default()
 	router.GET("/products", listProducts)
-	router.POST("/products", createProduct)
+	router.POST("/addProducts", createProduct)
 	router.GET("/productsById", listProductsById)
 	router.Run("localhost:9090")
 }
